@@ -1,2 +1,5 @@
 # socially
-A social media app developed as part of a university project.
+A social media with follow/unfollow system
+and one to one chat functionality incorporated
+with newsapi where users can post or share
+anything with friends.
