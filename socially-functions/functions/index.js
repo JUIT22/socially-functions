@@ -15,8 +15,6 @@ app.post('/scream/:screamId/comment',FBAuth,commentOnScream);
 app.delete('/scream/:screamId', FBAuth, deleteScream);
 app.post('/scream/:screamId/like',FBAuth,likeScream);
 app.post('/scream/:screamId/unlike',FBAuth,unlikeScream);
-app.post('/scream/:screamId/comment', FBAuth, commentOnScream);
-
 
 app.post('/signup', signup);
 app.post('/login',login);

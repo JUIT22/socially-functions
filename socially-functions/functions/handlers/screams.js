@@ -18,7 +18,7 @@ exports.getAllScreams = (req,res) => {
 exports.postOneScream = (req,res) => {
     const newScream = {
         body: req.body.body,
-        userHandle: req.body.userHandle,
+        userHandle: req.user.handle,
         userImage: req.user.imageUrl,
         createdAt: new Date().toISOString(),
         likeCount: 0,
