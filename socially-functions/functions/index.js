@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 const app = require('express')();
 
 const FBAuth = require('./util/fbAuth');
+const { db } = require('./util/admin');
 
 const {getAllScreams,postOneScream,getScream,commentOnScream,likeScream,unlikeScream,deleteScream
 } = require('./handlers/screams');
@@ -49,6 +50,7 @@ exports.createNotificationOnLike = functions
       })
       .catch((err) => console.error(err));
   });
+
 exports.deleteNotificationOnUnLike = functions
   .region('asia-south1')
   .firestore.document('likes/{id}')
@@ -61,6 +63,7 @@ exports.deleteNotificationOnUnLike = functions
         return;
       });
   });
+
 exports.createNotificationOnComment = functions
   .region('asia-south1')
   .firestore.document('comments/{id}')
@@ -93,8 +96,8 @@ exports.onUserImageChange = functions
   .region('asia-south1')
   .firestore.document('/users/{userId}')
   .onUpdate((change) => {
-    console.log(change.before.data());
-    console.log(change.after.data());
+    // console.log(change.before.data());
+    // console.log(change.after.data());
     if (change.before.data().imageUrl !== change.after.data().imageUrl) {
       console.log('image has changed');
       const batch = db.batch();
