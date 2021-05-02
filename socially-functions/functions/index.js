@@ -7,9 +7,10 @@ const { db } = require('./util/admin');
 const {getAllScreams,postOneScream,getScream,commentOnScream,likeScream,unlikeScream,deleteScream
 } = require('./handlers/screams');
 const {signup,login,uploadImage,addUserDetails,getAuthenticatedUser,  getUserDetails,
-  markNotificationsRead} = require('./handlers/users');
+  markNotificationsRead, followUser, unFollowUser,getFriendsScreams } = require('./handlers/users');
 
 app.get('/screams',getAllScreams);
+app.get('/fscreams',FBAuth,getFriendsScreams);
 app.post('/scream',FBAuth, postOneScream);
 app.get('/scream/:screamId',getScream);
 app.post('/scream/:screamId/comment',FBAuth,commentOnScream);
@@ -23,6 +24,8 @@ app.post('/user/image',FBAuth,uploadImage);
 app.post('/user',FBAuth,addUserDetails);
 app.get('/user',FBAuth,getAuthenticatedUser);
 app.get('/user/:handle', getUserDetails);
+app.post('/user/:handle/follow',FBAuth,followUser);
+app.post('/user/:handle/unfollow',FBAuth,unFollowUser);
 app.post('/notifications', FBAuth, markNotificationsRead);
 
 exports.api = functions.region('asia-south1').https.onRequest(app);
