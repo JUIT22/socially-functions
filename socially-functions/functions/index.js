@@ -26,6 +26,10 @@ const {
 	unFollowUser
 } = require("./handlers/users");
 
+const {
+  sendMessage
+} = require("./handlers/chat.js");
+
 app.get("/screams", getAllScreams);
 app.get("/fscreams", FBAuth, getFriendsScreams);
 app.post("/scream", FBAuth, postOneScream);
@@ -44,6 +48,9 @@ app.get("/user/:handle", getUserDetails);
 app.post("/user/:handle/follow", FBAuth, followUser);
 app.post("/user/:handle/unfollow", FBAuth, unFollowUser);
 app.post("/notifications", FBAuth, markNotificationsRead);
+
+app.post("/message/:handle",FBAuth,sendMessage);
+app.get("/messages/:handle",FBAuth,getMessage);
 
 exports.api = functions.region("asia-south1").https.onRequest(app);
 exports.createNotificationOnLike = functions
