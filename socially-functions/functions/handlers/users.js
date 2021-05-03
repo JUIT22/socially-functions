@@ -287,23 +287,4 @@ exports.unFollowUser = (req,res) => {
     })
 };
 
-exports.getFriendsScreams = (req,res) => {
-    let following = [];
-    db.doc(`users/${req.user.handle}`).get()
-    .then((doc)=>{
-      following=doc.data().following
-      console.log(following)
-      return db.collection('screams').orderBy('createdAt','desc').get()
-    })
-    .then(data =>{
-      let screams = [];
-      data.forEach((doc) => {
-          if(following.includes(doc.data().userHandle)) screams.push({screamId: doc.id,...doc.data()});
-      });
-      return res.json(screams);
-  })
-    .catch((err)=>{
-      console.error(err);
-      return res.status(500).json({ error: err.code });
-    })
-};
+
