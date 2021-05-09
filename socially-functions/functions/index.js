@@ -12,7 +12,8 @@ const {
 	likeScream,
 	unlikeScream,
 	deleteScream,
-  getFriendsScreams
+  getFriendsScreams,
+  getTrendingScreams
 } = require("./handlers/screams");
 const {
 	signup,
@@ -33,6 +34,7 @@ const {
 } = require("./handlers/chats");
 
 app.get("/screams", getAllScreams);
+app.get("/tscreams", getTrendingScreams);
 app.get("/fscreams", FBAuth, getFriendsScreams);
 app.post("/scream", FBAuth, postOneScream);
 app.get("/scream/:screamId", getScream);
@@ -52,7 +54,6 @@ app.post("/user/unfollow", FBAuth, unFollowUser);
 app.post("/notifications", FBAuth, markNotificationsRead);
 app.get("/search", searchUsers);
 app.get("/recommend", FBAuth,getRecommendations);
-
 
 app.post("/message/:handle",FBAuth,sendMessage);
 //app.get("/messages/:handle",FBAuth,getMessage);

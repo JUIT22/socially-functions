@@ -217,20 +217,50 @@ exports.getFriendsScreams = (req, res) => {
 	db.doc(`users/${req.user.handle}`)
 		.get()
 		.then((doc) => {
-      let promises = [];
-      doc.data().following.forEach((handle) => {
-        promises.push(db.collection("screams").where("userHandle","==",handle).get());
-      })
-			return Promise.all(promises)
+			let promises = [];
+			Object.entries(doc.data().following).forEach(([handle,imageUrl]) => {
+				promises.push(db.collection("screams").where("userHandle", "==", handle).get());
+			});
+			return Promise.all(promises);
 		})
 		.then((values) => {
 			let screams = [];
 			values.forEach((data) => {
-        data.forEach((doc) => {
-          screams.push({ screamId: doc.id, ...doc.data() });
-        })
+				data.forEach((doc) => {
+					screams.push({ screamId: doc.id, ...doc.data() });
+				});
 			});
-      screams.sort((a,b) => a.createdAt>b.createdAt);
+			screams.sort((a, b) => {
+				if (a.createdAt < b.createdAt) return 1;
+				return -1;
+			});
+			return res.json(screams);
+		})
+		.catch((err) => {
+			console.error(err);
+			return res.status(500).json({ error: err.code });
+		});
+};
+
+exports.getTrendingScreams = (req, res) => {
+	let currentTime = new Date().getTime();
+	db.collection("screams")
+		.orderBy("createdAt", "desc")
+		.limit(20)
+		.get()
+		.then((docs) => {
+			let screams = [];
+			docs.forEach((doc) => {
+				screams.push(doc.data());
+			});
+			for (let i = 0; i < screams.length; i++) {
+				let screamTime = new Date(screams[i].createdAt).getTime();
+				screams[i].trend = (screams[i].likeCount + screams[i].commentCount) / (currentTime - screamTime);
+			}
+			screams.sort((a, b) => {
+				if (a.trend < b.trend) return 1;
+				return -1;
+			});
 			return res.json(screams);
 		})
 		.catch((err) => {

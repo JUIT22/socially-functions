@@ -15,6 +15,7 @@ exports.signup = (req, res) => {
 		password: req.body.password,
 		confirmPassword: req.body.confirmPassword,
 		handle: req.body.handle,
+		following: {}
 	};
 
 	const { valid, errors } = validateSignupData(newUser);
@@ -340,7 +341,7 @@ exports.getRecommendations = (req, res) => {
 		});
 };
 
-getRecommendationsUtil = (queue, users, recommendations, res) => {
+const getRecommendationsUtil = (queue, users, recommendations, res) => {
 	if (queue.empty()) return res.json(recommendations);
 	let user = queue.pop();
 	db.doc(`users/${user}`)
@@ -348,8 +349,7 @@ getRecommendationsUtil = (queue, users, recommendations, res) => {
 		.then((doc) => {
 			for (let u in doc.data().following) {
 				if (!users.has(u)) {
-					let obj = { handle: u, imageUrl: doc.data().following[u] };
-					recommendations.push(obj);
+					recommendations.push({ handle: u, imageUrl: doc.data().following[u] });
 					console.log(obj);
 					queue.push(u);
 					users.add(u);
