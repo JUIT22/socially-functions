@@ -12,8 +12,8 @@ const {
 	likeScream,
 	unlikeScream,
 	deleteScream,
-  getFriendsScreams,
-  getTrendingScreams
+	getFriendsScreams,
+	getTrendingScreams,
 } = require("./handlers/screams");
 const {
 	signup,
@@ -26,12 +26,10 @@ const {
 	followUser,
 	unFollowUser,
 	searchUsers,
-	getRecommendations
+	getRecommendations,
 } = require("./handlers/users");
 
-const {
-  sendMessage
-} = require("./handlers/chats");
+const { sendMessage } = require("./handlers/chats");
 
 app.get("/screams", getAllScreams);
 app.get("/tscreams", getTrendingScreams);
@@ -53,9 +51,9 @@ app.post("/user/follow", FBAuth, followUser);
 app.post("/user/unfollow", FBAuth, unFollowUser);
 app.post("/notifications", FBAuth, markNotificationsRead);
 app.get("/search", searchUsers);
-app.get("/recommend", FBAuth,getRecommendations);
+app.get("/recommend", FBAuth, getRecommendations);
 
-app.post("/message/:handle",FBAuth,sendMessage);
+app.post("/message/:handle", FBAuth, sendMessage);
 //app.get("/messages/:handle",FBAuth,getMessage);
 
 exports.api = functions.region("asia-south1").https.onRequest(app);
