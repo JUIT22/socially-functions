@@ -23,12 +23,14 @@ const {
 	getUserDetails,
 	markNotificationsRead,
 	followUser,
-	unFollowUser
+	unFollowUser,
+	searchUsers,
+	getRecommendations
 } = require("./handlers/users");
 
 const {
   sendMessage
-} = require("./handlers/chat.js");
+} = require("./handlers/chats");
 
 app.get("/screams", getAllScreams);
 app.get("/fscreams", FBAuth, getFriendsScreams);
@@ -45,12 +47,15 @@ app.post("/user/image", FBAuth, uploadImage);
 app.post("/user", FBAuth, addUserDetails);
 app.get("/user", FBAuth, getAuthenticatedUser);
 app.get("/user/:handle", getUserDetails);
-app.post("/user/:handle/follow", FBAuth, followUser);
-app.post("/user/:handle/unfollow", FBAuth, unFollowUser);
+app.post("/user/follow", FBAuth, followUser);
+app.post("/user/unfollow", FBAuth, unFollowUser);
 app.post("/notifications", FBAuth, markNotificationsRead);
+app.get("/search", searchUsers);
+app.get("/recommend", FBAuth,getRecommendations);
+
 
 app.post("/message/:handle",FBAuth,sendMessage);
-app.get("/messages/:handle",FBAuth,getMessage);
+//app.get("/messages/:handle",FBAuth,getMessage);
 
 exports.api = functions.region("asia-south1").https.onRequest(app);
 exports.createNotificationOnLike = functions
