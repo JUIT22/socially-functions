@@ -349,7 +349,6 @@ const getRecommendationsUtil = (queue, users, recommendations, res) => {
 			for (let u in doc.data().following) {
 				if (!users.has(u)) {
 					recommendations.push({ handle: u, imageUrl: doc.data().following[u] });
-					console.log(obj);
 					queue.push(u);
 					users.add(u);
 				}

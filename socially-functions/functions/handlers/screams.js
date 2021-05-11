@@ -251,7 +251,7 @@ exports.getTrendingScreams = (req, res) => {
 		.then((docs) => {
 			let screams = [];
 			docs.forEach((doc) => {
-				screams.push(doc.data());
+				screams.push({screamId: doc.id, ...doc.data()});
 			});
 			for (let i = 0; i < screams.length; i++) {
 				let screamTime = new Date(screams[i].createdAt).getTime();
