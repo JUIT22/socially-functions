@@ -1,4 +1,5 @@
 const { db } = require("../util/admin");
+const Filter = require("bad-words");
 
 exports.getAllScreams = (req, res) => {
 	db.collection("screams")
@@ -19,7 +20,7 @@ exports.getAllScreams = (req, res) => {
 
 exports.postOneScream = (req, res) => {
 	const newScream = {
-		body: req.body.body,
+		body: new Filter().clean(req.body.body),
 		userHandle: req.user.handle,
 		userImage: req.user.imageUrl,
 		createdAt: new Date().toISOString(),
@@ -213,14 +214,38 @@ exports.deleteScream = (req, res) => {
 		});
 };
 
+exports.deleteComment = (req, res) => {
+	const document = db.doc(`/comments/${req.params.commentId}`);
+	document
+		.get()
+		.then((doc) => {
+			if (!doc.exists) {
+				return res.status(404).json({ error: "Comment not found" });
+			}
+			if (doc.data().userHandle !== req.user.handle) {
+				return res.status(403).json({ error: "Unauthorized" });
+			} else {
+				return document.delete();
+			}
+		})
+		.then(() => {
+			res.json({ message: "Comment deleted successfully" });
+		})
+		.catch((err) => {
+			console.error(err);
+			return res.status(500).json({ error: err.code });
+		});
+};
+
 exports.getFriendsScreams = (req, res) => {
 	db.doc(`users/${req.user.handle}`)
 		.get()
 		.then((doc) => {
 			let promises = [];
-			Object.entries(doc.data().following).forEach(([handle,imageUrl]) => {
+			Object.entries(doc.data().following).forEach(([handle, imageUrl]) => {
 				promises.push(db.collection("screams").where("userHandle", "==", handle).get());
 			});
+			promises.push(db.collection("screams").where("userHandle", "==", req.user.handle).get());
 			return Promise.all(promises);
 		})
 		.then((values) => {
@@ -251,7 +276,7 @@ exports.getTrendingScreams = (req, res) => {
 		.then((docs) => {
 			let screams = [];
 			docs.forEach((doc) => {
-				screams.push({screamId: doc.id, ...doc.data()});
+				screams.push({ screamId: doc.id, ...doc.data() });
 			});
 			for (let i = 0; i < screams.length; i++) {
 				let screamTime = new Date(screams[i].createdAt).getTime();
