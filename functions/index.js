@@ -28,6 +28,7 @@ const {
 	unFollowUser,
 	searchUsers,
 	getRecommendations,
+	getUserHandles,
 } = require("./handlers/users");
 
 const { sendMessage } = require("./handlers/chats");
@@ -38,7 +39,7 @@ app.get("/fscreams", FBAuth, getFriendsScreams);
 app.post("/scream", FBAuth, postOneScream);
 app.get("/scream/:screamId", getScream);
 app.post("/scream/:screamId/comment", FBAuth, commentOnScream);
-app.delete("/comment/:commentId", FBAuth, deleteComment);
+app.delete("/scream/:screamId/comment/:commentId", FBAuth, deleteComment);
 app.delete("/scream/:screamId", FBAuth, deleteScream);
 app.post("/scream/:screamId/like", FBAuth, likeScream);
 app.post("/scream/:screamId/unlike", FBAuth, unlikeScream);
@@ -48,6 +49,7 @@ app.post("/login", login);
 app.post("/user/image", FBAuth, uploadImage);
 app.post("/user", FBAuth, addUserDetails);
 app.get("/user", FBAuth, getAuthenticatedUser);
+app.get("/users", getUserHandles);
 app.get("/user/:handle", getUserDetails);
 app.post("/user/follow", FBAuth, followUser);
 app.post("/user/unfollow", FBAuth, unFollowUser);
@@ -113,6 +115,19 @@ exports.createNotificationOnComment = functions
 					});
 				}
 			})
+			.catch((err) => {
+				console.error(err);
+				return;
+			});
+	});
+
+exports.deleteNotificationOnDeleteComment = functions
+	.region("asia-south1")
+	.firestore.document("comments/{id}")
+	.onDelete((snapshot) => {
+		return db
+			.doc(`/notifications/${snapshot.id}`)
+			.delete()
 			.catch((err) => {
 				console.error(err);
 				return;

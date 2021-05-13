@@ -14,7 +14,7 @@ exports.signup = (req, res) => {
 		email: req.body.email,
 		password: req.body.password,
 		confirmPassword: req.body.confirmPassword,
-		handle: req.body.handle
+		handle: req.body.handle,
 	};
 
 	const { valid, errors } = validateSignupData(newUser);
@@ -47,6 +47,11 @@ exports.signup = (req, res) => {
 				following: [],
 			};
 			return db.doc(`/users/${newUser.handle}`).set(userCredentials);
+		})
+		.then(() => {
+			return db
+				.doc(`util/userHandles`)
+				.update({ handles: admin.firestore.FieldValue.arrayUnion(newUser.handle) });
 		})
 		.then(() => {
 			return res.status(201).json({ token });
@@ -355,6 +360,18 @@ const getRecommendationsUtil = (queue, users, recommendations, res) => {
 				if (recommendations.length === 5) return res.json(recommendations);
 			}
 			getRecommendationsUtil(queue, users, recommendations, res);
+		})
+		.catch((err) => {
+			console.error(err);
+			return res.status(500).json({ error: err.code });
+		});
+};
+
+exports.getUserHandles = (req, res) => {
+	db.doc(`util/userHandles`)
+		.get()
+		.then((doc) => {
+			return res.json({ users: doc.data().handles });
 		})
 		.catch((err) => {
 			console.error(err);

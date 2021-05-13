@@ -1,4 +1,4 @@
-const { db } = require("../util/admin");
+const { admin, db } = require("../util/admin");
 const Filter = require("bad-words");
 
 exports.getAllScreams = (req, res) => {
@@ -91,7 +91,7 @@ exports.getScream = (req, res) => {
 		.then((data) => {
 			screamData.comments = [];
 			data.forEach((doc) => {
-				screamData.comments.push(doc.data());
+				screamData.comments.push({ commentId: doc.id, ...doc.data() });
 			});
 			return res.json(screamData);
 		})
@@ -229,6 +229,11 @@ exports.deleteComment = (req, res) => {
 			}
 		})
 		.then(() => {
+			return db
+				.doc(`screams/${req.params.screamId}`)
+				.update("commentCount", admin.firestore.FieldValue.increment(-1));
+		})
+		.then(() => {
 			res.json({ message: "Comment deleted successfully" });
 		})
 		.catch((err) => {
@@ -282,10 +287,7 @@ exports.getTrendingScreams = (req, res) => {
 				let screamTime = new Date(screams[i].createdAt).getTime();
 				screams[i].trend = (screams[i].likeCount + screams[i].commentCount) / (currentTime - screamTime);
 			}
-			screams.sort((a, b) => {
-				if (a.trend < b.trend) return 1;
-				return -1;
-			});
+			screams.sort((a, b) => b.trend - a.trend);
 			return res.json(screams);
 		})
 		.catch((err) => {
