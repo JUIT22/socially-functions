@@ -1,23 +1,6 @@
 const { admin, db } = require("../util/admin");
 const Filter = require("bad-words");
 
-exports.getAllScreams = (req, res) => {
-	db.collection("screams")
-		.orderBy("createdAt", "desc")
-		.get()
-		.then((data) => {
-			let screams = [];
-			data.forEach((doc) => {
-				screams.push({ screamId: doc.id, ...doc.data() });
-			});
-			return res.json(screams);
-		})
-		.catch((err) => {
-			console.error(err);
-			return res.status(500).json({ error: err.code });
-		});
-};
-
 exports.postOneScream = (req, res) => {
 	const newScream = {
 		body: new Filter().clean(req.body.body),
@@ -44,7 +27,7 @@ exports.commentOnScream = (req, res) => {
 	if (req.body.body.trim() === "") return res.status(400).json({ comment: "Must not be empty" });
 
 	const newComment = {
-		body: req.body.body,
+		body: new Filter().clean(req.body.body),
 		createdAt: new Date().toISOString(),
 		screamId: req.params.screamId,
 		userHandle: req.user.handle,
