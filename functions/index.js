@@ -5,7 +5,6 @@ const FBAuth = require("./util/fbAuth");
 const { db } = require("./util/admin");
 
 const {
-	getAllScreams,
 	postOneScream,
 	getScream,
 	commentOnScream,
@@ -33,7 +32,6 @@ const {
 
 const { sendMessage } = require("./handlers/chats");
 
-app.get("/screams", getAllScreams);
 app.get("/tscreams", getTrendingScreams);
 app.get("/fscreams", FBAuth, getFriendsScreams);
 app.post("/scream", FBAuth, postOneScream);

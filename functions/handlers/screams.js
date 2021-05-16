@@ -227,6 +227,7 @@ exports.deleteComment = (req, res) => {
 
 exports.getFriendsScreams = (req, res) => {
 	db.doc(`users/${req.user.handle}`)
+		.limit(20)
 		.get()
 		.then((doc) => {
 			let promises = [];
