@@ -1,8 +1,12 @@
 const functions = require("firebase-functions");
 const app = require("express")();
 
+const cors = require('cors');
+
 const FBAuth = require("./util/fbAuth");
 const { db } = require("./util/admin");
+
+app.use(cors());
 
 const {
 	postOneScream,
@@ -55,8 +59,6 @@ app.post("/notifications", FBAuth, markNotificationsRead);
 app.get("/search", searchUsers);
 app.get("/recommend", FBAuth, getRecommendations);
 
-app.post("/message/:handle", FBAuth, sendMessage);
-//app.get("/messages/:handle",FBAuth,getMessage);
 
 exports.api = functions.region("asia-south1").https.onRequest(app);
 exports.createNotificationOnLike = functions

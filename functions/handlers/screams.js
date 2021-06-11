@@ -227,14 +227,13 @@ exports.deleteComment = (req, res) => {
 
 exports.getFriendsScreams = (req, res) => {
 	db.doc(`users/${req.user.handle}`)
-		.limit(20)
 		.get()
 		.then((doc) => {
 			let promises = [];
 			Object.entries(doc.data().following).forEach(([handle, imageUrl]) => {
 				promises.push(db.collection("screams").where("userHandle", "==", handle).get());
 			});
-			promises.push(db.collection("screams").where("userHandle", "==", req.user.handle).get());
+			promises.push(db.collection("screams").where("userHandle", "==", req.user.handle).limit(20).get());
 			return Promise.all(promises);
 		})
 		.then((values) => {
