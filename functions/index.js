@@ -34,8 +34,6 @@ const {
 	getUserHandles,
 } = require("./handlers/users");
 
-const { sendMessage } = require("./handlers/chats");
-
 app.get("/tscreams", getTrendingScreams);
 app.get("/fscreams", FBAuth, getFriendsScreams);
 app.post("/scream", FBAuth, postOneScream);
